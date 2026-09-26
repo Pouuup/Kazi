@@ -1,20 +1,18 @@
 package fs
 
 import (
-	"fmt"
 	"os"
 )
 
-func SearchDirectory(currentPath string) []os.DirEntry {
+func SearchDirectory(currentPath string) ([]os.DirEntry, error) {
 	d, err := os.ReadDir(currentPath)
 	if err != nil {
-		fmt.Println(err)
-		return nil
+		return nil, err
 	}
 	total := []os.DirEntry{}
 	for _, val := range d {
 		total = append(total, val)
 	}
-	return total
+	return total, nil
 
 }
