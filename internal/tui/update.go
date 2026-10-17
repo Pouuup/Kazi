@@ -8,12 +8,6 @@ import (
 )
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-
-	elements, err := fs.SearchDirectory(m.path)
-	if err != nil {
-		m.err = err
-	}
-
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.height = msg.Height
@@ -28,15 +22,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.position--
 			}
 		case "down", "j":
-			if m.position < len(elements)-1 {
+			if m.position < len(m.files)-1 {
 				m.position++
 			}
 		case "enter":
-			if len(elements) == 0 {
+			m.files, m.err = fs.SearchDirectory(m.path)
+
+			if len(m.files) == 0 {
 				return m, nil
 			}
 
-			current := elements[m.position]
+			current := m.files[m.position]
 
 			if !current.IsDir() {
 				name := current.Name()
@@ -46,10 +42,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 			m.path = filepath.Join(m.path, current.Name())
+			m.files, m.err = fs.SearchDirectory(m.path)
 
 			m.position = 0
 		case "esc":
 			m.path = filepath.Dir(m.path)
+
+			m.files, m.err = fs.SearchDirectory(m.path)
+
 			m.position = 0
 		}
 	}

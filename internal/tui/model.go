@@ -1,6 +1,10 @@
 package tui
 
-import "os"
+import (
+	"os"
+
+	"github.com/Pouuup/Kazi/internal/fs"
+)
 
 type model struct {
 	files    []os.DirEntry
@@ -18,6 +22,6 @@ func InitialModel() model {
 	if err != nil {
 		return model{err: err}
 	}
-
+	m.files, m.err = fs.SearchDirectory(m.path)
 	return m
 }
